@@ -39,7 +39,7 @@ const findExistingUser = (username, email, studentId) => {
 };
 
 // User Registration
-exports.register = async (req, res) => {
+exports.register = (req, res) => {
   try {
     const { username, email, password, studentId, phone, isDriver } = req.body;
 
@@ -105,7 +105,7 @@ exports.register = async (req, res) => {
 };
 
 // User Login
-exports.login = async (req, res) => {
+exports.login = (req, res) => {
   try {
     const { email, password } = req.body;
 
@@ -193,7 +193,7 @@ exports.logout = (req, res) => {
 };
 
 // Get Current User Profile
-exports.getProfile = async (req, res) => {
+exports.getProfile = (req, res) => {
   try {
     console.log('👤 Profile request from session:', req.session.userId);
 
@@ -239,7 +239,7 @@ exports.getProfile = async (req, res) => {
 };
 
 // Get all users (for testing - remove in production)
-exports.getAllUsers = async (req, res) => {
+exports.getAllUsers = (_req, res) => {
   try {
     const usersWithoutPasswords = mockUsers.map(user => ({
       id: user.id,

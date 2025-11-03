@@ -1,15 +1,22 @@
-// Simple database configuration
-console.log('🔧 Database configuration loaded');
+const mongoose = require('mongoose');
 
 const connectDB = async () => {
   try {
-    console.log('✅ Database connection initialized');
-    console.log('💡 Using development mode - add MongoDB later');
+    // Use a simple local connection string
+    const conn = await mongoose.connect('mongodb://127.0.0.1:27017/student_rideshare', {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+      serverSelectionTimeoutMS: 5000, // 5 second timeout
+      bufferCommands: false, // Disable buffering
+    });
+    
+    console.log(`✅ MongoDB Connected: ${conn.connection.host}`);
     return true;
   } catch (error) {
-    console.log('⚠️  Database not available, but server will continue');
-    console.log('💡 Install MongoDB for full functionality');
-    return true;
+    console.log('❌ MongoDB Connection Failed:', error.message);
+    console.log('💡 TIP: Install MongoDB locally or use MongoDB Atlas');
+    console.log('📚 For now, continuing without database...');
+    return false;
   }
 };
 
