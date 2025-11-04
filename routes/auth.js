@@ -1,36 +1,111 @@
 const express = require('express');
+const User = require('../models/User');
 const router = express.Router();
-const authController = require('../controllers/authController');
 
-// GET /api/auth - Test route
-router.get('/', (req, res) => {
-  res.json({ 
-    message: 'Auth routes are working!',
-    endpoints: {
-      register: 'POST /api/auth/register',
-      login: 'POST /api/auth/login', 
-      logout: 'GET /api/auth/logout',
-      profile: 'GET /api/auth/profile',
-      testUsers: 'GET /api/auth/test-users' // For testing
+// Student Registration
+router.post('/register', async (req, res) => {
+  try {
+    const { username, email, password, studentId, program, graduationYear, role, carDetails } = req.body;
+
+    // Check required fields
+    if (!username || !email || !password || !studentId || !program || !graduationYear || !role) {
+      return res.status(400).json({
+        success: false,
+        message: 'Missing required fields: username, email, password, studentId, program, graduationYear, role'
+      });
     }
-  });
+
+    // Check if user already exists
+    const existingUser = await User.findOne({ 
+      $or: [{ email }, { studentId }, { username }] 
+    });
+    
+    if (existingUser) {
+      return res.status(400).json({
+        success: false,
+        message: 'User already exists with this email, student ID, or username'
+      });
+    }
+
+    // Create new user
+    const user = new User({
+      username,
+      email,
+      password,
+      studentId,
+      program,
+      graduationYear,
+      role,
+      carDetails: role === 'driver' || role === 'both' ? carDetails : undefined
+    });
+
+    await user.save();
+
+    res.status(201).json({
+      success: true,
+      message: 'Student registered successfully!',
+      user: {
+        id: user._id,
+        username: user.username,
+        email: user.email,
+        studentId: user.studentId,
+        program: user.program,
+        role: user.role
+      }
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Server error during registration',
+      error: error.message
+    });
+  }
 });
 
-// POST /api/auth/register - User registration
-router.post('/register', authController.register);
+// Login (for both students and admin)
+router.post('/login', async (req, res) => {
+  try {
+    const { email, password } = req.body;
 
-// POST /api/auth/login - User login  
-router.post('/login', authController.login);
+    // Find user
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(401).json({
+        success: false,
+        message: 'Invalid email or password'
+      });
+    }
 
-// GET /api/auth/logout - User logout
-router.get('/logout', authController.logout);
+    // Check password
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(401).json({
+        success: false,
+        message: 'Invalid email or password'
+      });
+    }
 
-// GET /api/auth/profile - Get user profile
-router.get('/profile', authController.getProfile);
+    res.json({
+      success: true,
+      message: 'Login successful!',
+      user: {
+        id: user._id,
+        username: user.username,
+        email: user.email,
+        role: user.role,
+        isAdmin: user.isAdmin
+      },
+      token: 'jwt-token-placeholder' // You'll implement JWT later
+    });
 
-// GET /api/auth/test-users - Get all users (for testing)
-router.get('/test-users', authController.getAllUsers);
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Server error during login',
+      error: error.message
+    });
+  }
+});
 
 module.exports = router;
-// GET /api/auth/enhanced-profile - Get Zimride-style profile
-router.get('/enhanced-profile', authController.getEnhancedProfile);

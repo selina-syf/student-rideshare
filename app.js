@@ -1,8 +1,12 @@
 const express = require('express');
 const path = require('path');
+const cors = require('cors');
 require('dotenv').config();
 
 const app = express();
+
+// Add CORS support (before your routes)
+app.use(cors());
 
 // Basic middleware
 app.use(express.json());
@@ -54,6 +58,11 @@ app.get('/', (req, res) => {
   });
 });
 
+// Admin routes
+const adminRoutes = require('./routes/admin');
+app.use('/api/admin', adminRoutes);
+
+
 // Handle 404 errors
 app.use('*', (req, res) => {
   res.status(404).json({
@@ -77,7 +86,8 @@ app.use((err, req, res, next) => {
   });
 });
 
-const PORT = process.env.PORT || 3000;
+// ✅ ONLY ONE app.listen() CALL - THIS IS THE FIX
+const PORT = process.env.PORT || 5000; // Changed to 5000
 
 app.listen(PORT, () => {
   console.log('✨ ======================================== ✨');
