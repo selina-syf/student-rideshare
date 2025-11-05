@@ -1,3 +1,7 @@
+import connectDB from "./config/database.js";
+
+connectDB(); // initialize MongoDB connection
+
 const express = require('express');
 const path = require('path');
 require('dotenv').config();

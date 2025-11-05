@@ -1,12 +1,20 @@
-const config = {
-    env: process.env.NODE_ENV || 'development', 
-    port: process.env.PORT || 3000,
-    jwtSecret: process.env.JWT_SECRET || "YOUR_secret_key", 
-    mongoUri: process.env.MONGODB_URI || "mongodb+srv://selinayifan_db_user:selina032699@cluster0.kpqathm.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0" ||
-    process.env.MONGO_HOST ||
-    'mongodb://' + (process.env.IP || 'localhost') + ':' + 
-   (process.env.MONGO_PORT || '27017') +
-    '/mernproject' 
-    }
-    export default config
-   
+import mongoose from "mongoose";
+import config from "./config.js";
+
+const connectDB = async () => {
+  console.log("🗄️ Database configuration loaded");
+
+  try {
+    await mongoose.connect(config.mongoUri, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
+
+    console.log("✅ MongoDB connected successfully!");
+  } catch (error) {
+    console.error("⚠️ MongoDB connection failed:", error.message);
+    console.log("💡 Using development mode - server will still run");
+  }
+};
+
+export default connectDB;
