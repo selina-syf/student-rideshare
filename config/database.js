@@ -1,16 +1,12 @@
-// Simple database configuration
-console.log('🔧 Database configuration loaded');
-
-const connectDB = async () => {
-  try {
-    console.log('✅ Database connection initialized');
-    console.log('💡 Using development mode - add MongoDB later');
-    return true;
-  } catch (error) {
-    console.log('⚠️  Database not available, but server will continue');
-    console.log('💡 Install MongoDB for full functionality');
-    return true;
-  }
-};
-
-module.exports = connectDB;
+const config = {
+    env: process.env.NODE_ENV || 'development', 
+    port: process.env.PORT || 3000,
+    jwtSecret: process.env.JWT_SECRET || "YOUR_secret_key", 
+    mongoUri: process.env.MONGODB_URI || "mongodb+srv://selinayifan_db_user:selina032699@cluster0.kpqathm.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0" ||
+    process.env.MONGO_HOST ||
+    'mongodb://' + (process.env.IP || 'localhost') + ':' + 
+   (process.env.MONGO_PORT || '27017') +
+    '/mernproject' 
+    }
+    export default config
+   
