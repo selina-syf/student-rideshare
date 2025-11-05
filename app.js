@@ -1,12 +1,17 @@
-import connectDB from "./config/database.js";
+const express = require("express");
+const connectDB = require("./config/database");
+const config = require("./config/config");
 
-connectDB(); // initialize MongoDB connection
+const app = express();
+connectDB();
 
-const express = require('express');
+app.listen(config.port, () => {
+  console.log(`Server running on port ${config.port}`);
+});
+
 const path = require('path');
 require('dotenv').config();
 
-const app = express();
 
 // Basic middleware
 app.use(express.json());
